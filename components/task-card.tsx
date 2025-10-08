@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, memo } from "react"
 import { MoreVertical, Trash2, Archive, Copy, CheckCircle2, HelpCircle, Lightbulb, LinkIcon } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -43,13 +43,13 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
 }
 
-export function TaskCard({ task, onToggle, onDelete, onUpdate, onArchive, onDuplicate }: TaskCardProps) {
+const TaskCardComponent = ({ task, onToggle, onDelete, onUpdate, onArchive, onDuplicate }: TaskCardProps) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(task.content || task.title)
   const [isRotating, setIsRotating] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   const getDeadlineBadge = () => {
     if (!task.dueDate) return null
@@ -327,3 +327,5 @@ export function TaskCard({ task, onToggle, onDelete, onUpdate, onArchive, onDupl
     </Card>
   )
 }
+
+export const TaskCard = memo(TaskCardComponent)

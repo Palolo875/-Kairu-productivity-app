@@ -1,11 +1,19 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { TaskCard } from "./task-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, TrendingUp, Zap, Calendar, ArchiveIcon } from "lucide-react"
 import type { Task } from "@/types/task"
+
+const energyColors: Record<string, string> = {
+  deep: "bg-purple-500/20 text-purple-700 dark:text-purple-300",
+  light: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
+  creative: "bg-pink-500/20 text-pink-700 dark:text-pink-300",
+  admin: "bg-orange-500/20 text-orange-700 dark:text-orange-300",
+  learning: "bg-green-500/20 text-green-700 dark:text-green-300",
+}
 
 interface ArchivesProps {
   tasks: Task[]
@@ -88,13 +96,18 @@ export function Archives({
     }
   }, [archivedTasks])
 
-  const energyColors: Record<string, string> = {
-    deep: "bg-purple-500/20 text-purple-700 dark:text-purple-300",
-    light: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
-    creative: "bg-pink-500/20 text-pink-700 dark:text-pink-300",
-    admin: "bg-orange-500/20 text-orange-700 dark:text-orange-300",
-    learning: "bg-green-500/20 text-green-700 dark:text-green-300",
-  }
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
+
+  const handleEnergyFilterToggle = useCallback((energy: string) => {
+    setEnergyFilter((prev) => prev === energy ? null : energy)
+  }, [])
+
+  const handleResetFilters = useCallback(() => {
+    setSearchQuery("")
+    setEnergyFilter(null)
+  }, [])
 
   return (
     <div className="container mx-auto px-4 py-8 animate-in fade-in duration-500" role="region" aria-label="Archives">
@@ -110,7 +123,7 @@ export function Archives({
           <Input
             placeholder="Rechercher dans les archives..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-12 rounded-3xl neuro-soft border-border/50 h-12"
           />
         </div>
@@ -162,7 +175,7 @@ export function Archives({
                 .map(([energy, count]) => (
                   <button
                     key={energy}
-                    onClick={() => setEnergyFilter(energyFilter === energy ? null : energy)}
+                    onClick={() => handleEnergyFilterToggle(energy)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                       energyFilter === energy
                         ? energyColors[energy] || "bg-primary/20 text-primary"
@@ -229,10 +242,7 @@ export function Archives({
           {(searchQuery || energyFilter) && (
             <Button
               variant="ghost"
-              onClick={() => {
-                setSearchQuery("")
-                setEnergyFilter(null)
-              }}
+              onClick={handleResetFilters}
               className="mt-4 rounded-full"
             >
               Réinitialiser les filtres

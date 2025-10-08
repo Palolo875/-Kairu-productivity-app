@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { TaskCard } from "./task-card"
 import type { Task } from "@/types/task"
 import { priorityLevels } from "@/types/task"
@@ -133,30 +133,32 @@ export function TaskGrid({
     }
   }, [tasks, sortBy, taskOrder])
 
-  const activeTasks = sortedTasks.filter((t) => !t.completed)
-  const completedTasks = sortedTasks.filter((t) => t.completed)
+  const activeTasks = useMemo(() => sortedTasks.filter((t) => !t.completed), [sortedTasks])
+  const completedTasks = useMemo(() => sortedTasks.filter((t) => t.completed), [sortedTasks])
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string)
-  }
+  }, [])
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = taskOrder.indexOf(active.id as string)
-      const newIndex = taskOrder.indexOf(over.id as string)
+      setTaskOrder((prevOrder) => {
+        const oldIndex = prevOrder.indexOf(active.id as string)
+        const newIndex = prevOrder.indexOf(over.id as string)
 
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newOrder = arrayMove(taskOrder, oldIndex, newIndex)
-        setTaskOrder(newOrder)
-      }
+        if (oldIndex !== -1 && newIndex !== -1) {
+          return arrayMove(prevOrder, oldIndex, newIndex)
+        }
+        return prevOrder
+      })
     }
 
     setActiveId(null)
-  }
+  }, [])
 
-  const activeTask = activeId ? tasks.find((t) => t.id === activeId) : null
+  const activeTask = useMemo(() => activeId ? tasks.find((t) => t.id === activeId) : null, [activeId, tasks])
 
   if (tasks.length === 0) {
     return (
