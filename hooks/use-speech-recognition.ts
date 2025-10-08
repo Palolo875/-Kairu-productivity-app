@@ -1,7 +1,54 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import type { SpeechRecognition, SpeechRecognitionEvent, SpeechRecognitionErrorEvent } from "web-speech-api"
+
+interface SpeechRecognitionResult {
+  isFinal: boolean
+  [index: number]: SpeechRecognitionAlternative
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number
+  results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+  message: string
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  start(): void
+  stop(): void
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition?: {
+      new(): SpeechRecognition
+    }
+    webkitSpeechRecognition?: {
+      new(): SpeechRecognition
+    }
+  }
+}
 
 interface UseSpeechRecognitionOptions {
   continuous?: boolean
@@ -36,11 +83,11 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
   useEffect(() => {
     // Check if SpeechRecognition is supported
     if (typeof window !== "undefined") {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition
-      setIsSupported(!!SpeechRecognition)
+      const SpeechRecognitionConstructor = window.SpeechRecognition ?? window.webkitSpeechRecognition
+      setIsSupported(!!SpeechRecognitionConstructor)
 
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition()
+      if (SpeechRecognitionConstructor) {
+        const recognition = new SpeechRecognitionConstructor()
         recognition.continuous = continuous
         recognition.interimResults = interimResults
         recognition.lang = lang
