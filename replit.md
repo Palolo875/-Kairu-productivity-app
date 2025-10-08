@@ -5,6 +5,52 @@ A Next.js 15 productivity application with task management, energy tracking, ins
 
 ## Recent Changes
 
+### 2025-10-08: KairuFlow UI Redesign - Complete
+Implemented comprehensive UI redesign with soft, welcoming aesthetic using pastel colors and rounded design elements.
+
+**Design System**:
+- **Font**: Nunito (friendly, rounded typeface)
+- **Colors**: 
+  - Background: #FFF5E0 (warm beige)
+  - Primary: #EE9E8E (soft peach)
+  - Secondary: #8EEDDE (mint teal) for tags/projects
+  - Accent: #8EB8EE (soft blue) for time-blocks
+- **Border Radius**: 20-30px throughout for soft, approachable feel
+- **Shadows**: Subtle shadows (0_4px_20px_rgba(0,0,0,0.06))
+
+**Component Redesigns**:
+1. **Onboarding Welcome Screen**:
+   - Stair-step illustration with friendly character
+   - "KairuFlow" branding and "Organisez vos journées, avec douceur" tagline
+   - Soft white cards with rounded corners
+
+2. **Vue Jour (Daily View)**:
+   - Circular progress gauge header with percentage
+   - "Bonjour 👋" personalized greeting
+   - Empty state with waving cat illustration for Playlist
+   - Transparent white cards for Intention/Notebook sections
+   - Enlarged task creation zone (50px input, circular orange "+" button)
+
+3. **Mode Fiches (Task Cards)**:
+   - White cards with 20px rounded corners
+   - Pastel colored tags with icons (projects, priorities, energy, deadlines)
+   - Adaptive deadline badges with urgency-based colors
+   - Circular checkboxes with smooth animations
+   - Color-coded priority indicator bars
+
+4. **Vue Stats (Insights Dashboard)**:
+   - Circular progress gauges for key metrics
+   - Adaptive percentage calculation per metric type
+   - Bubble chart (ScatterChart) for energy distribution
+   - Pastel bar charts for priority completion
+   - Soft line charts for weekly trends
+   - All containers with white backgrounds and 20px rounded corners
+
+**Technical Details**:
+- Preserved all existing functionality (voice input, NLP parsing, auto-save)
+- Maintained French language interface
+- All changes reviewed and validated by architecture review
+
 ### 2025-10-08: Vercel to Replit Migration
 - **Configured Replit Environment**: Updated package.json scripts to use port 5000 and host 0.0.0.0 for Replit compatibility
 - **Dependency Fixes**: 
