@@ -15,10 +15,10 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Server"
+args = "Next.js App"
 
 [[workflows.workflow]]
-name = "Server"
+name = "Next.js App"
 author = "agent"
 
 [[workflows.workflow.tasks]]
@@ -32,6 +32,10 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 34035
+externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
