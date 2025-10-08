@@ -83,6 +83,7 @@ interface OnboardingQuizProps {
 }
 
 export function OnboardingQuiz({ onComplete, onSkip }: OnboardingQuizProps) {
+  const [showWelcome, setShowWelcome] = useState(true)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showTutorial, setShowTutorial] = useState(false)
@@ -137,6 +138,45 @@ export function OnboardingQuiz({ onComplete, onSkip }: OnboardingQuizProps) {
       breakPreference: 15,
       workDays,
     }
+  }
+
+  if (showWelcome) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-around bg-background p-10 text-center">
+        <div className="w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-8 flex justify-center">
+            <div className="w-80 h-80 relative">
+              <svg viewBox="0 0 400 400" className="w-full h-full">
+                <defs>
+                  <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{stopColor: "#EE9E8E", stopOpacity: 0.8}} />
+                    <stop offset="100%" style={{stopColor: "#8EEDDE", stopOpacity: 0.8}} />
+                  </linearGradient>
+                </defs>
+                <circle cx="200" cy="250" r="80" fill="#FFDBC3" opacity="0.5"/>
+                <rect x="120" y="200" width="40" height="60" rx="20" fill="url(#gradient1)"/>
+                <rect x="180" y="150" width="40" height="90" rx="20" fill="url(#gradient1)"/>
+                <rect x="240" y="100" width="40" height="120" rx="20" fill="url(#gradient1)"/>
+                <circle cx="140" cy="190" r="12" fill="#190933"/>
+                <circle cx="200" cy="140" r="12" fill="#190933"/>
+                <circle cx="260" cy="90" r="12" fill="#190933"/>
+                <path d="M 250 60 Q 255 55, 260 60" stroke="#190933" strokeWidth="2" fill="none"/>
+                <path d="M 270 60 Q 275 55, 280 60" stroke="#190933" strokeWidth="2" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <h1 className="text-5xl font-bold mb-3 text-foreground">KairuFlow</h1>
+          <p className="text-xl text-muted-foreground mb-12">Organisez vos journées, avec douceur.</p>
+          <Button 
+            onClick={() => setShowWelcome(false)} 
+            size="lg"
+            className="w-full max-w-sm rounded-full py-6 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+          >
+            Commencer
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   if (showTutorial) {
