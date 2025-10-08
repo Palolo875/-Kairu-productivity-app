@@ -1,0 +1,150 @@
+La Vue "Stats" - La Galerie de vos ProgrèsOn va repenser la manière de présenter les données pour qu'elle soit moins "corporate" et plus "personnelle".Inspiration : Les images 1 et 6 de ta sélection, qui utilisent des cercles, des jauges organiques et des illustrations pour représenter les données.Partie A : Les Indicateurs Clés (KPIs)On remplace la grille de cartes carrées par une disposition plus dynamique et illustrée.Instructions pour Replit AI :
+"Je veux réorganiser la section des indicateurs clés. Au lieu d'une grille 2x2, je veux une carte principale plus grande pour le 'Taux de complétion' et des cartes secondaires plus petites pour les autres stats. Chaque carte doit avoir une illustration personnalisée."Prompt pour l'IA (Illustrations pour les KPIs) :"A set of 4 cute, minimalist icons for a productivity stats screen.1.Completion Rate: A smiling star giving a thumbs up.2.Deep Work: A crescent moon with a few stars, symbolizing quiet focus.3.Peak Productivity: A friendly sun with soft rays.4.Weekly Average: A small calendar icon with a heart on it.
+Style: Soft shapes, pastel colors, on a transparent background."Code HTML (structure des KPIs) :<div class="kpi-grid">
+    <!-- Carte principale -->
+    <div class="kpi-card-large">
+        <div class="kpi-header">
+            <img src="path/to/star-icon.png" alt="Taux de complétion">
+            <span>Taux de complétion</span>
+        </div>
+        <div class="kpi-main-value">100%</div>
+        <div class="kpi-progress-bar">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+        <div class="kpi-sub-value">2 tâches complétées sur 2</div>
+    </div>
+    <!-- Cartes secondaires -->
+    <div class="kpi-card-small">
+        <div class="kpi-header">
+            <img src="path/to/moon-icon.png" alt="Deep Work">
+            <span>Deep Work</span>
+        </div>
+        <div class="kpi-main-value">4h</div>
+    </div>
+    <div class="kpi-card-small">
+        <!-- ... etc pour les autres KPIs -->
+    </div>
+</div>
+Code CSS (pour les KPIs) :.kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Grille à 2 colonnes */
+    gap: 15px;
+    padding: 20px;
+}
+
+.kpi-card-large {
+    grid-column: 1 / -1; /* Prend toute la largeur */
+    background-color: #FFFFFF;
+    border-radius: 25px;
+    padding: 20px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
+}
+
+.kpi-card-small {
+    background-color: #FFFFFF;
+    border-radius: 25px;
+    padding: 20px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
+}
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #888;
+}
+
+.kpi-header img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.kpi-main-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #190933;
+    margin: 10px 0;
+}
+
+.kpi-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #F0F0F0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #EE9E8E; /* Orange pêche */
+    border-radius: 4px;
+}
+
+.kpi-sub-value {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+}
+Partie B : Les Graphiques - Rendre les Données BellesOn remplace les graphiques en barres standards par des visualisations plus organiques et engageantes.Inspiration : L'image 6, avec les cercles de tailles différentes.1. Distribution par Type d'ÉnergieInstructions pour Replit AI :
+"Je veux remplacer le graphique en barres 'Distribution par type d'énergie' par une visualisation à base de cercles. Chaque catégorie ('Deep Work', 'Creative', etc.) sera représentée par un cercle. La taille du cercle sera proportionnelle au nombre de tâches ou au temps passé dans cette catégorie. Utilise des couleurs pastel différentes pour chaque cercle."Code HTML (structure du graphique à bulles) :<div class="chart-container">
+    <h3 class="section-title">Distribution par Énergie</h3>
+    <div class="bubble-chart">
+        <div class="bubble" style="width: 100px; height: 100px; background-color: #EE9E8E;">
+            <span>Deep Work</span>
+        </div>
+        <div class="bubble" style="width: 60px; height: 60px; background-color: #FFDBC3;">
+            <span>Creative</span>
+        </div>
+        <div class="bubble" style="width: 80px; height: 80px; background-color: #A4D4AE;">
+            <span>Admin</span>
+        </div>
+        <!-- ... etc. -->
+    </div>
+</div>
+Code CSS (pour le graphique à bulles) :.chart-container {
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.bubble-chart {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* Aligner les bulles verticalement */
+    justify-content: center;
+    gap: 15px;
+    min-height: 200px;
+}
+
+.bubble {
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #190933;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.5s ease; /* Pour animer les changements de taille */
+}
+(Note : La taille des bulles sera calculée en JavaScript et appliquée via le style inline).2. Le Bouton "Exporter PDF"On le rend plus visible et plus "premium".Code CSS (pour le bouton d'export) :.export-button {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #EE9E8E;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.export-button img { /* Pour une petite icône de téléchargement */
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+Avec ces changements, l'écran "Stats" devient un point fort de l'application. Il n'est plus seulement informatif, il est gratifiant. L'utilisateur aura plaisir à venir voir ses progrès, car ils sont présentés d'une manière qui célèbre ses efforts plutôt que de simplement les quantifier.

@@ -1,0 +1,93 @@
+Étape 1 : L'Onboarding - L'Écran d'AccueilObjectif : Créer un écran simple, beau et inspirant qui accueille l'utilisateur pour la première fois. Il doit communiquer la mission de Kairuflow ("la productivité bienveillante") en une seule image.Inspiration : On se base sur l'image 2 de ta sélection, avec le personnage qui monte les escaliers. C'est une métaphore visuelle parfaite.Partie A : L'Illustration PrincipaleC'est l'élément le plus important. On va rédiger un prompt détaillé pour une IA génératrice d'images (comme Midjourney, DALL-E 3 ou Ideogram).Instructions pour le prompt :•Sujet : Un personnage amical et non genré qui monte des escaliers.•Métaphore : Les marches sont étiquetées avec les étapes de la productivité.•Style : Illustration plate, lignes épurées, couleurs douces.•Ambiance : Optimiste, encourageante, calme.Prompt à utiliser :A minimalist and charming full-screen illustration for a productivity app onboarding screen.A friendly, androgynous character with a large pencil is confidently climbing three large, soft-shaped steps. The steps are labeled from bottom to top: "Ideas", "Plan", "Execution".The style is a clean, flat illustration with soft, rounded shapes. The color palette is warm and gentle: a light beige background (#FFF5E0), with steps in shades of soft orange and terracotta (#EE9E8E, #D48C7A). The character is simple.Inspiration: Think of modern, friendly illustrations seen on Dribbble.--ar 9:19(Traduction et explication : "Une illustration minimaliste et charmante en plein écran pour un écran d'onboarding d'application de productivité. Un personnage amical et androgyne avec un grand crayon monte avec confiance trois grandes marches aux formes douces. Les marches sont étiquetées de bas en haut : "Idées", "Plan", "Exécution". Le style est une illustration plate et propre avec des formes douces et arrondies. La palette de couleurs est chaude et douce : un fond beige clair (#FFF5E0), avec des marches dans des tons d'orange doux et de terre cuite (#EE9E8E, #D48C7A). Le personnage est simple. Inspiration : Pensez aux illustrations modernes et amicales que l'on voit sur Dribbble. --ar 9:19" - le format 9:19 est idéal pour un écran de smartphone).Partie B : La Structure et le Code (HTML & CSS)Voici le code de base pour structurer cet écran. Tu peux donner ces instructions et ce code à l'agent Replit AI pour qu'il l'implémente et l'adapte.Instructions pour Replit AI :
+"Crée un composant d'onboarding en HTML et CSS. La structure doit contenir un conteneur principal qui prend tout l'écran. À l'intérieur, il y aura une zone pour l'illustration en haut, le nom de l'application au milieu, et un bouton 'Commencer' en bas. Utilise la palette de couleurs et la police fournies."Code HTML (index.html) :<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur Kairuflow</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- On importe une police arrondie et amicale depuis Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="illustration-area">
+            <!-- C'est ici que tu mettras l'image générée par l'IA -->
+            <img src="path/to/your/onboarding-illustration.png" alt="Illustration d'un personnage qui monte les marches des idées, du plan et de l'exécution">
+        </div>
+        <h1 class="app-title">Kairuflow</h1>
+        <p class="app-tagline">Organisez vos journées, avec douceur.</p>
+        <button class="start-button">Commencer</button>
+    </div>
+</body>
+</html>
+Code CSS (style.css) :/* Réinitialisation et configuration de base */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Nunito', sans-serif;
+    background-color: #FFF5E0; /* Beige clair de notre palette */
+    color: #190933; /* Noir doux pour le texte */
+}
+
+/* Conteneur principal qui centre tout */
+.onboarding-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around; /* Espace les éléments joliment */
+    height: 100%;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Zone pour l'illustration */
+.illustration-area {
+    width: 100%;
+    max-width: 350px;
+}
+
+.illustration-area img {
+    width: 100%;
+    height: auto;
+}
+
+/* Titre de l'application */
+.app-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Slogan de l'application */
+.app-tagline {
+    font-size: 18px;
+    margin-top: 8px;
+    opacity: 0.8;
+}
+
+/* Bouton principal */
+.start-button {
+    width: 100%;
+    max-width: 350px;
+    padding: 18px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #190933;
+    background-color: #FFFFFF; /* Bouton blanc pour contraster */
+    border: none;
+    border-radius: 50px; /* Très arrondi */
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre douce */
+    transition: transform 0.2s ease;
+}
+
+.start-button:hover {
+    transform: translateY(-2px); /* Léger effet au survol */
+}
+Tu as maintenant tout ce qu'il faut pour créer cette première étape. Une fois que tu auras généré l'illustration et que Replit AI aura implémenté ce code, tu auras un écran d'onboarding magnifique et fonctionnel.Prêt à passer à l'étape suivante, la vue "Jour" ?

@@ -4,40 +4,44 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Soft color palette - Rose poudre, beige, crème, corail, olive, pêche, miel */
-  --background: oklch(0.98 0.01 60); /* Crème doux */
-  --foreground: oklch(0.35 0.02 40); /* Noix doux pour texte */
-  --card: oklch(0.97 0.015 50); /* Beige très clair */
-  --card-foreground: oklch(0.35 0.02 40);
-  --popover: oklch(0.99 0.01 60);
-  --popover-foreground: oklch(0.35 0.02 40);
-  --primary: oklch(0.75 0.12 25); /* Pêche/Corail doux */
-  --primary-foreground: oklch(0.98 0.01 60);
-  --secondary: oklch(0.88 0.08 15); /* Rose poudre */
-  --secondary-foreground: oklch(0.35 0.02 40);
-  --muted: oklch(0.92 0.02 50); /* Beige clair */
-  --muted-foreground: oklch(0.55 0.02 40);
-  --accent: oklch(0.65 0.08 120); /* Vert olive/sauge */
-  --accent-foreground: oklch(0.98 0.01 60);
-  --destructive: oklch(0.65 0.15 25); /* Rouge corail */
-  --destructive-foreground: oklch(0.98 0.01 60);
-  --border: oklch(0.9 0.02 50);
-  --input: oklch(0.94 0.02 50);
-  --ring: oklch(0.75 0.12 25);
-  --chart-1: oklch(0.75 0.12 25); /* Pêche */
-  --chart-2: oklch(0.65 0.08 120); /* Vert sauge */
-  --chart-3: oklch(0.8 0.1 60); /* Jaune miel */
-  --chart-4: oklch(0.88 0.08 15); /* Rose poudre */
-  --chart-5: oklch(0.65 0.15 25); /* Corail */
-  --radius: 1.25rem; /* Formes très rondes */
-  --sidebar: oklch(0.97 0.015 50);
-  --sidebar-foreground: oklch(0.35 0.02 40);
-  --sidebar-primary: oklch(0.75 0.12 25);
-  --sidebar-primary-foreground: oklch(0.98 0.01 60);
-  --sidebar-accent: oklch(0.92 0.02 50);
-  --sidebar-accent-foreground: oklch(0.35 0.02 40);
-  --sidebar-border: oklch(0.9 0.02 50);
-  --sidebar-ring: oklch(0.75 0.12 25);
+  /* KairuFlow color palette - doux et bienveillant */
+  --background: 43.2 20 60.4; /* #FFF5E0 - Beige clair chaleureux */
+  --foreground: 17.6 71.6 289.9; /* #190933 - Noir doux */
+  --card: 0 0 100%; /* #FFFFFF - Blanc pur pour les cartes */
+  --card-foreground: 17.6 71.6 289.9;
+  --popover: 0 0 100%;
+  --popover-foreground: 17.6 71.6 289.9;
+  --primary: 17.1 29.5 13.9; /* #EE9E8E - Orange pêche */
+  --primary-foreground: 0 0 100%;
+  --secondary: 11.9 24.9 20.1; /* #FFDBC3 - Pêche clair */
+  --secondary-foreground: 17.6 71.6 289.9;
+  --muted: 43.2 20 60.4; /* Beige clair */
+  --muted-foreground: 297.5 8.8 59.6; /* #B0A8B9 - Gris pour placeholder */
+  --accent: 177.6 61.8 68.3; /* #8EEDDE - Vert d'eau */
+  --accent-foreground: 17.6 71.6 289.9;
+  --destructive: 17.1 29.5 13.9; /* Orange pêche aussi pour destructive */
+  --destructive-foreground: 0 0 100%;
+  --border: 0 0 87.8%; /* #E0E0E0 - Bordures douces */
+  --input: 0 0 94.1%;
+  --ring: 17.1 29.5 13.9;
+  
+  /* Couleurs pour charts */
+  --chart-1: 17.1 29.5 13.9; /* Orange pêche */
+  --chart-2: 177.6 61.8 68.3; /* Vert d'eau */
+  --chart-3: 209.1 60.8 67.5; /* #8EB8EE - Bleu doux */
+  --chart-4: 11.9 24.9 20.1; /* Pêche clair */
+  --chart-5: 48.8 69.4 95.3; /* #A4D4AE - Vert clair */
+  
+  --radius: 1.5rem; /* Formes très arrondies */
+  
+  --sidebar: 0 0 100%;
+  --sidebar-foreground: 17.6 71.6 289.9;
+  --sidebar-primary: 17.1 29.5 13.9;
+  --sidebar-primary-foreground: 0 0 100%;
+  --sidebar-accent: 43.2 20 60.4;
+  --sidebar-accent-foreground: 17.6 71.6 289.9;
+  --sidebar-border: 0 0 87.8%;
+  --sidebar-ring: 17.1 29.5 13.9;
 }
 
 .dark {
@@ -76,8 +80,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-nunito);
+  --font-mono: ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

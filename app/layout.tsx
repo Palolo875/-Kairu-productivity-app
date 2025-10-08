@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
+import { Nunito } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { OfflineIndicator } from '@/components/pwa-offline-indicator'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import './globals.css'
+
+const nunito = Nunito({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-nunito',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'KairuFlow - Productivité Énergétique',
@@ -50,7 +56,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`font-sans ${nunito.variable}`}>
         {children}
         <OfflineIndicator />
         <PWAInstallPrompt />

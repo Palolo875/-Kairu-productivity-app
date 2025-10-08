@@ -1,0 +1,149 @@
+ Le Mode "Fiches" - L'Atelier de CréationPartie A : La Zone de Création de TâcheC'est la première chose que l'on voit. Elle doit être accueillante et puissante.Inspiration : La simplicité de ton design actuel, mais avec la chaleur du nouveau style.Instructions pour Replit AI :
+"Je veux améliorer la zone de saisie des tâches. Le champ de texte doit être plus grand et plus invitant. Le bouton 'Créer la fiche' doit être plus proéminent et utiliser la couleur principale de notre palette. Les instructions doivent être claires et amicales."Code HTML (structure de la zone de création) :<div class="creation-container">
+    <div class="input-wrapper">
+        <textarea id="task-input" placeholder="Notez une nouvelle tâche... ex: Réunion demain #ProjetX !urgent"></textarea>
+        <button class="create-task-button">
+            <img src="path/to/plus-icon.svg" alt="Ajouter"> <!-- Une icône simple '+' -->
+        </button>
+    </div>
+    <div class="input-helpers">
+        <span>Appuyez sur Entrée pour créer</span>
+        <span>Utilisez # pour les projets, ! pour la priorité</span>
+    </div>
+</div>
+Code CSS (pour le style de la zone de création) :.creation-container {
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+#task-input {
+    flex-grow: 1;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    color: #190933;
+    resize: none; /* Empêche le redimensionnement manuel */
+    height: 50px; /* Hauteur de base */
+}
+
+#task-input::placeholder {
+    color: #B0A8B9;
+}
+
+.create-task-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background-color: #EE9E8E; /* Orange pêche */
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.create-task-button:hover {
+    transform: scale(1.05);
+}
+
+.input-helpers {
+    font-size: 12px;
+    color: #888;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+Partie B : Le Design des Cartes de Tâches et des TagsC'est ici qu'on va vraiment donner vie à l'interface. On garde tes excellentes idées de tags, mais on les rend plus "soft".Inspiration : Les cartes arrondies de tes images, avec des tags colorés mais doux.Instructions pour Replit AI :
+"Je veux re-styler les cartes de tâches et les tags. Les cartes doivent être blanches, très arrondies, avec une ombre douce. Les tags doivent aussi être arrondis, avec des couleurs pastel et une petite icône illustrative pour chaque type de tag (priorité, projet, etc.)."Prompt pour l'IA (Icônes pour les tags) :"A set of simple, cute, single-color icons for UI tags.1.A project tag: a simple folder icon.2.A priority tag: a small flame icon.3.A context tag: a simple location pin icon.4.A time-block tag: a simple clock icon.
+Style: Minimalist, clean lines, soft black color, transparent background."Code CSS (pour les cartes et tags) :/* Le style de .task-card a déjà été défini dans l'étape précédente, on l'affine ici */
+
+.task-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.task-header .checkbox {
+    /* Style déjà défini */
+}
+
+.task-header .task-name {
+    /* Style déjà défini */
+    flex-grow: 1;
+}
+
+.task-actions button { /* Pour les boutons '...' ou 'éditer' */
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Espace entre les tags */
+    padding-left: 41px; /* Aligner avec le nom de la tâche (largeur checkbox + marge) */
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 20px; /* Très arrondi */
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tag img { /* L'icône dans le tag */
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+}
+
+/* Couleurs des différents tags */
+.tag.project {
+    background-color: rgba(142, 238, 222, 0.5); /* Vert d'eau */
+    color: #006A58;
+}
+
+.tag.priority-high {
+    background-color: rgba(238, 158, 142, 0.5); /* Orange pêche */
+    color: #9D3A24;
+}
+
+.tag.time-block {
+    background-color: rgba(142, 184, 238, 0.5); /* Bleu doux */
+    color: #1E4A8E;
+}
+Exemple HTML d'une carte de tâche complète :<div class="task-card">
+    <div class="task-header">
+        <div class="checkbox"></div>
+        <span class="task-name">Bloquer 2h - deep</span>
+        <div class="task-actions">
+            <button>...</button>
+        </div>
+    </div>
+    <div class="tags-container">
+        <div class="tag time-block">
+            <img src="path/to/clock-icon.svg" alt="Time block">
+            <span>time-block</span>
+        </div>
+        <div class="tag priority-high">
+            <img src="path/to/flame-icon.svg" alt="Priorité">
+            <span>High</span>
+        </div>
+    </div>
+</div>
+Avec ces modifications, le mode "Fiches" devient non seulement plus beau et cohérent avec le reste de l'application, mais aussi plus clair. Les couleurs et les icônes des tags permettent de comprendre une tâche d'un seul coup d'œil, rendant l'expérience plus rapide et moins fatigante mentalement.

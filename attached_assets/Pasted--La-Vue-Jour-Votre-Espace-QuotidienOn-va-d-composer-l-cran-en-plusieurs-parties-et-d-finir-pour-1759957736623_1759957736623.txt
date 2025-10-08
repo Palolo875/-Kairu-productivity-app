@@ -1,0 +1,155 @@
+ La Vue "Jour" - Votre Espace QuotidienOn va décomposer l'écran en plusieurs parties et définir pour chacune les prompts pour les illustrations et le code.Partie A : L'En-tête et les Indicateurs ClésTon en-tête actuel est fonctionnel, mais un peu froid. On va le rendre plus organique.Inspiration : L'image 1 de ta sélection, avec la jauge circulaire.Instructions pour Replit AI :
+"Je veux redésigner l'en-tête de ma vue 'Jour'. Au lieu de trois chiffres alignés, je veux un élément central plus visuel. Il affichera la date, un message de bienvenue, et une jauge circulaire de complétion des tâches pour la journée."Code HTML (structure de l'en-tête) :<div class="header-container">
+    <div class="date-welcome">
+        <p class="date">mercredi 8 octobre 2025</p>
+        <h2 class="welcome-message">Bonjour, Alex 👋</h2>
+    </div>
+    <div class="daily-progress-ring">
+        <!-- Ce cercle sera créé et animé en CSS/JS -->
+        <div class="progress-ring-inner">
+            <span class="progress-value">0/0</span>
+            <span class="progress-label">Tâches</span>
+        </div>
+    </div>
+</div>
+Code CSS (pour le style de l'en-tête) :.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.date-welcome .date {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+.date-welcome .welcome-message {
+    font-size: 24px;
+    font-weight: 700;
+    color: #190933;
+    margin: 4px 0 0 0;
+}
+
+.daily-progress-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(#EE9E8E 0%, #E0E0E0 0%); /* Orange pêche pour le progrès, gris pour le fond */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.5s;
+}
+
+.progress-ring-inner {
+    width: 65px;
+    height: 65px;
+    background: #FFF5E0; /* Couleur du fond de la page pour "creuser" le centre */
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-ring-inner .progress-value {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.progress-ring-inner .progress-label {
+    font-size: 12px;
+    color: #888;
+}
+(Note : L'animation du conic-gradient se fera en JavaScript en mettant à jour le pourcentage en fonction des tâches complétées).Partie B : La "Playlist du Jour" (La Liste des Tâches)C'est le cœur de l'écran. On va particulièrement soigner l'état vide pour le rendre encourageant.Inspiration : L'image 2 (le chat) et l'image 4 (les illustrations en noir et blanc).1. L'État Vide (quand il n'y a pas de tâches)Prompt pour l'IA (Illustration) :A cute and friendly cartoon cat, peeking from the bottom of the screen and waving. The cat is smiling.Style: Simple flat illustration with clean outlines and soft shapes.Color Palette: Warm orange, cream, and a soft black for the outlines. The background should be transparent.Code HTML (pour l'état vide) :<div class="tasks-container">
+    <h3 class="section-title">Playlist du Jour</h3>
+    <div class="empty-state">
+        <img src="path/to/your/waving-cat.png" alt="Chat amical qui fait un signe de la main">
+        <p class="empty-state-title">Prêt à créer une super journée ?</p>
+        <p class="empty-state-subtitle">Ajoutez votre première tâche pour commencer.</p>
+    </div>
+</div>
+2. Le Design des Cartes de TâchesInstructions pour Replit AI :
+"Je veux styliser les cartes de tâches. Chaque tâche doit être dans une carte blanche avec des coins très arrondis et une ombre douce. La checkbox doit être un cercle. Quand une tâche est cochée, le texte est barré et la carte devient légèrement transparente."Code CSS (pour les tâches) :.task-card {
+    background-color: #FFFFFF;
+    padding: 15px;
+    border-radius: 20px; /* Très arrondi */
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+}
+
+.task-card.completed {
+    opacity: 0.6;
+}
+
+.task-card.completed .task-name {
+    text-decoration: line-through;
+}
+
+.checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #E0E0E0;
+    border-radius: 50%; /* Cercle */
+    margin-right: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox.checked {
+    background-color: #EE9E8E; /* Orange pêche */
+    border-color: #EE9E8E;
+    /* On peut ajouter une icône de coche blanche ici via un ::after ou un SVG */
+}
+
+.task-name {
+    font-size: 16px;
+    color: #190933;
+}
+Partie C : "Intention" et "Bloc-notes"On garde ces sections très utiles, mais on les adoucit.Instructions pour Replit AI :
+"Stylisez les sections 'Intention du Jour' et 'Bloc-notes'. Elles doivent ressembler à des zones de texte sur des cartes douces, avec une petite icône illustrative à côté du titre."Prompt pour l'IA (Icônes) :"A set of two simple, cute icons for a productivity app.1.A small, sparkling star icon.2.A simple open notebook icon.
+Style: Minimalist, single-line, soft black color, transparent background."Code CSS (pour ces sections) :.intention-card, .notes-card {
+    background-color: rgba(255, 255, 255, 0.7); /* Blanc un peu transparent */
+    padding: 20px;
+    border-radius: 25px;
+    margin-top: 25px;
+}
+
+.card-title-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-title-container img { /* L'icône que tu as générée */
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Style pour les champs de texte */
+.intention-input, .notes-textarea {
+    width: 100%;
+    border: none;
+    background: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    color: #190933;
+}
+
+.intention-input::placeholder, .notes-textarea::placeholder {
+    color: #888;
+    opacity: 0.8;
+}
+Avec ces éléments, ta vue "Jour" passera d'un tableau de bord informatif à un espace d'accueil personnel, encourageant et agréable à utiliser chaque matin.
