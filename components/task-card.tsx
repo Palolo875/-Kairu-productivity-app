@@ -143,7 +143,7 @@ const TaskCardComponent = ({ task, onToggle, onDelete, onUpdate, onArchive, onDu
 
   return (
     <Card
-      className={`neuro-soft neuro-hover rounded-3xl border-border/50 bg-card overflow-hidden transition-all duration-300 ${
+      className={`bg-white rounded-[20px] border-none shadow-[0_4px_20px_rgba(0,0,0,0.06)] overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] ${
         task.completed ? "opacity-60" : ""
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -270,59 +270,94 @@ const TaskCardComponent = ({ task, onToggle, onDelete, onUpdate, onArchive, onDu
           </div>
         )}
 
-        {/* Metadata */}
+        {/* Metadata - Design KairuFlow avec tags très arrondis */}
         <div className="flex flex-wrap gap-2 mt-4">
           {task.tags.map((tag, i) => (
             <span
               key={i}
-              className="px-3 py-1 bg-secondary/50 text-secondary-foreground rounded-full text-xs font-medium"
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium flex items-center gap-1.5"
+              style={{ backgroundColor: 'rgba(142, 238, 222, 0.5)', color: '#2d3748' }}
               role="tag"
             >
-              #{tag}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              {tag}
             </span>
           ))}
           {task.priority !== "medium" && (
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
-              {task.priority === "urgent" ? "🔥" : ""} {task.priority}
+            <span 
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium flex items-center gap-1.5"
+              style={{ 
+                backgroundColor: task.priority === 'urgent' || task.priority === 'high' 
+                  ? 'rgba(238, 158, 142, 0.5)' 
+                  : 'rgba(142, 238, 222, 0.3)',
+                color: '#2d3748'
+              }}
+            >
+              {task.priority === "urgent" && "🔥"} 
+              {task.priority === "high" && "⚡"}
+              {task.priority === "low" && "🌱"}
+              {task.priority}
             </span>
           )}
           {task.size && (
-            <span className="px-3 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium">
+            <span 
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium"
+              style={{ backgroundColor: 'rgba(226, 232, 240, 0.8)', color: '#64748b' }}
+            >
               {sizeLabels[task.size]}
             </span>
           )}
           {task.energy && (
-            <span className="px-3 py-1 bg-primary/20 text-primary-foreground rounded-full text-xs font-medium">
+            <span 
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium flex items-center gap-1.5"
+              style={{ backgroundColor: 'rgba(142, 184, 238, 0.5)', color: '#2d3748' }}
+            >
               {energyEmojis[task.energy]}
             </span>
           )}
           {deadlineBadge && (
             <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${deadlineBadge.color}`}
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium flex items-center gap-1.5"
+              style={{ 
+                backgroundColor: 
+                  deadlineBadge.color.includes('destructive') 
+                    ? 'rgba(238, 158, 142, 0.5)'  // Pêche pour urgent/en retard
+                    : deadlineBadge.color.includes('chart-1')
+                      ? 'rgba(238, 158, 142, 0.3)'  // Pêche léger pour bientôt (3j)
+                      : 'rgba(226, 232, 240, 0.8)', // Gris neutre pour dates normales
+                color: deadlineBadge.color.includes('destructive') || deadlineBadge.color.includes('chart-1')
+                  ? '#2d3748'
+                  : '#64748b'
+              }}
               aria-label={`Deadline ${deadlineBadge.text}`}
             >
               📅 {deadlineBadge.text}
             </span>
           )}
           {subtaskProgress && (
-            <span className="px-3 py-1 bg-chart-2/20 text-chart-2 rounded-full text-xs font-medium">
+            <span 
+              className="px-3 py-1.5 rounded-[20px] text-xs font-medium"
+              style={{ backgroundColor: 'rgba(142, 238, 222, 0.3)', color: '#2d3748' }}
+            >
               {subtaskProgress}
             </span>
           )}
         </div>
       </div>
 
-      {/* Priority indicator bar */}
+      {/* Priority indicator bar - Design KairuFlow */}
       <div
-        className={`h-1 ${
-          task.priority === "urgent"
-            ? "bg-destructive"
-            : task.priority === "high"
-              ? "bg-chart-1"
-              : task.priority === "low"
-                ? "bg-chart-2"
-                : "bg-chart-3"
-        }`}
+        className="h-1.5 rounded-b-[20px]"
+        style={{
+          backgroundColor: 
+            task.priority === "urgent" ? "#EE9E8E" :
+            task.priority === "high" ? "#EE9E8E" :
+            task.priority === "low" ? "#8EEDDE" :
+            "#E2E8F0"
+        }}
       />
     </Card>
   )
