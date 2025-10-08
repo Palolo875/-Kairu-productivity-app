@@ -1,0 +1,181 @@
+Architecture Technique Détaillée de KairuFlow
+L'architecture technique de KairuFlow est conçue pour être modulaire, performante et évolutive, en priorisant l'offline-first, la sécurité des données locales, et une UX fluide. Elle s'appuie sur un stack frontend moderne, sans backend pour le MVP, pour respecter les contraintes de timeline (10-12 semaines) et de budget (40-45k€). Je vais détailler l'ensemble, en mettant l'accent sur les parties les plus importantes (marquées avec ★) : le frontend (structure et état), le stockage (persistance offline), la performance (optimisations critiques), l'accessibilité (inclusion), et la PWA (mobilité). Ces éléments sont essentiels car ils assurent la scalabilité, la fiabilité, et l'expérience utilisateur empathique (capture rapide, priorisation hybride, planification énergétique).
+Je structure la réponse par couches, avec justifications, exemples de code, et intégrations. L'architecture est monorepo (un seul repo Git), avec CI/CD simple via GitHub Actions pour tests/déploiement sur Vercel.
+1. Vue d'Ensemble Technique
+Type d'App : PWA offline-first, frontend-only (pas de serveur pour MVP ; futur backend en Module 2 pour sync multi-device).
+Langages/Stack :
+Frontend : React 18+ avec TypeScript (type-safety, scalabilité).
+Build : Vite (bundling rapide, HMR pour dev, bundle optimisé <300KB).
+Styles : Tailwind CSS (utilitaire, responsive via classes sm:, md:).
+Animations : Framer Motion (déclaratives, accessibles).
+Stockage : IndexedDB via Dexie.js (wrapper SQL-like pour persistance locale).
+Utilitaires :
+date-fns (manipulation dates/énergie, ex. : differenceInDays).
+Lunr.js (recherche full-text offline).
+marked.js/react-markdown (rendu Markdown léger).
+@dnd-kit/core (drag-drop pour grille et réorganisation).
+compromise.js (NLP léger pour suggestions saisie).
+Dépendances : Minimisées pour bundle light (~200KB sans libs lourdes comme ML).
+Environnement Dev : Node.js 20+, ESLint/Prettier (linting), Vitest (tests unitaires), Playwright (E2E, a11y).
+Objectifs Critiques :
+Performance : FCP <1s, TTI <2s, 60fps animations.
+Sécurité : Données locales (pas de PII), encryption IndexedDB optionnelle (crypto-subtle pour sensibles).
+Scalabilité : Modulaire pour 1M+ users (futur cloud sync via xAI API ou Firebase).
+★ 2. Frontend (Structure et Logique – Le Cœur de l'UX)
+Le frontend est le pilier de KairuFlow, gérant l'UI responsive, les interactions (saisie intelligente, drag-drop), et la logique métier (score hybride). Il est modulaire pour maintenance facile, avec composants réutilisables et hooks pour logique découplée.
+2.1 Structure des Fichiers
+Organisation du Code (/src pour un monorepo clair) :
+/components : Composants UI réutilisables.
+shared/ : Boutons, Inputs, Tags (ex. : Button.tsx avec variants Tailwind).
+Card/ : Card.tsx (fiche complète), CardHeader.tsx (icônes types), CardContent.tsx (Markdown), CardFooter.tsx (métadonnées).
+DailyNote/ : Playlist.tsx, Intention.tsx, Notebook.tsx.
+Sidebar.tsx : Navigation (vues, tags, recherche).
+/pages : Écrans principaux (routing).
+App.tsx : Layout global (sidebar, barre saisie, routing).
+SetupPage.tsx : Quiz onboarding.
+FichePage.tsx : Mode Fiche (grille).
+QuotidienPage.tsx : Mode Quotidien (Note).
+HebdoPage.tsx : Vue Hebdomadaire.
+ArchivesPage.tsx : Archives.
+ParametresPage.tsx : Paramètres.
+/hooks : Logique réutilisable.
+useCards.ts : Fetch/update fiches via Dexie.js.
+useEnergyProfile.ts : Gestion profil énergétique, affinage.
+useSearch.ts : Recherche Lunr.js.
+useHybridScore.ts : Calcul score (memoized).
+/services : Utilitaires purs.
+OpportunityScore.ts : Score d'Opportunité.
+EnergyParser.ts : Détection énergie/effort (regex).
+StorageService.ts : Wrapper Dexie.js pour CRUD.
+/types : Interfaces TS (ex. : Card, DailyNote, EnergyProfile).
+/utils : Helpers (ex. : uuid pour IDs, debounce pour saisie).
+/public : Assets (manifest.json, icônes PWA).
+Justification : Modulaire (facile à tester/étendre), type-safe (TS évite bugs runtime).
+2.2 Gestion de l'État (★ Critère Important pour Performance et Scalabilité)
+Outil : Zustand (léger, ~1KB, plus simple que Redux pour MVP).
+Structure :
+import create from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface AppState {
+  cards: Card[];
+  dailyNotes: DailyNote[];
+  energyProfile: EnergyProfile;
+  settings: Settings;
+  addCard: (card: Card) => void;
+  updateCard: (id: string, updates: Partial<Card>) => void;
+  getHybridScore: (task: Card) => number;
+  // ... autres actions pour dailyNotes, energy
+}
+
+export const useStore = create<AppState>()(persist((set, get) => ({
+  cards: [],
+  dailyNotes: [],
+  energyProfile: { peaks: [], dips: [], caffeineTimes: [] },
+  settings: { theme: 'light', autoArchive: true, energyWeight: 30 },
+  addCard: (card) => set({ cards: [...get().cards, card] }),
+  updateCard: (id, updates) => set({
+    cards: get().cards.map(c => c.id === id ? { ...c, ...updates } : c)
+  }),
+  getHybridScore: (task) => calculateHybridScore(task, get().energyProfile, new Date()),
+}), { name: 'kairuflow-store', getStorage: () => localStorage }));  // Persistance localStorage pour Zustand, sync IndexedDB
+Comportement : État global réactif, actions synchrones/asynchrones (ex. : addCard met à jour UI <10ms). Persist middleware pour survie refresh. Memoization (useMemo) pour scores coûteux.
+Intégration : Zustand sync avec Dexie.js (ex. : addCard → Dexie add, Zustand update). Utilisé dans hooks (ex. : useCards returne useStore((state) => state.cards)).
+Justification : Léger (vs. Redux), performant pour état local, facile pour offline (persistence).
+Exemple : Création fiche → addCard met à jour grille, calcule score pour Playlist.
+2.3 Routing et Navigation
+Outil : react-router-dom v6.
+Structure : Routes protégées (ex. : /setup si premier lancement).
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<FichePage />} />
+    <Route path="/daily/:date" element={<QuotidienPage />} />
+    <Route path="/weekly" element={<HebdoPage />} />
+    <Route path="/archives" element={<ArchivesPage />} />
+    <Route path="/settings" element={<ParametresPage />} />
+    <Route path="/setup" element={<SetupPage />} />
+  </Routes>
+</BrowserRouter>
+Comportement : Transitions fluides (Framer Motion <AnimatePresence> pour fade). Navigation sidebar/menu burger (slide-in mobile).
+Intégration : Route /daily/:date utilise date-fns pour parsing.
+Justification : Simple, performant, supporte history offline.
+2.4 Algorithmes et Logique Métier (★ Critère Important pour Différenciation)
+Score Hybride (services/OpportunityScore.ts) : Combine opportunité et énergie (voir code précédent).
+Parser Saisie (services/EnergyParser.ts) : Regex pour détection (ex. : /!{1,3}/g pour priorité).
+Affinage Énergie : Moyenne pondérée checks (ex. : après 20, ajuste peaks via date-fns).
+Comportement : Calcul memoized (useMemo) pour perf, exécuté minuit pour Playlist.
+Intégration : Score utilisé dans Playlist, parser dans barre saisie.
+Justification : Léger (pas d'IA lourde), précis pour MVP.
+★ 3. Stockage et Persistance (Critère Important pour Offline-First)
+Outil : Dexie.js (wrapper IndexedDB, SQL-like pour CRUD rapide).
+Schéma : Tables cards (index id, tags), dailyNotes (index date), energyProfiles (index id), settings (singleton).
+Structure :
+class KairuDB extends Dexie {
+  cards!: Table<Card, string>;
+  dailyNotes!: Table<DailyNote, string>;
+  energyProfiles!: Table<EnergyProfile, string>;
+  settings!: Table<Settings, string>;
+
+  constructor() {
+    super('KairuFlowDB');
+    this.version(1).stores({
+      cards: 'id, tags, archived',
+      dailyNotes: 'date',
+      energyProfiles: 'id',
+      settings: 'id'
+    });
+  }
+}
+
+const db = new KairuDB();
+
+// Exemple CRUD
+export const addCard = async (card: Card) => await db.cards.add(card);
+export const getCards = async () => await db.cards.toArray();
+Comportement : CRUD asynchrone (<10ms pour 100 fiches), transaction pour atomicité (ex. : update + recalcul score). Compression JSON.stringify minifié. Backup quotidien (copie tables vers clé backup_${date}).
+Intégration : Sync avec Zustand (middleware pour persistance). Recherche indexée pour filtres rapides.
+Justification : IndexedDB natif pour offline, Dexie.js simplifie API (vs. raw IDB). Pas de SQL/cloud pour MVP (léger, gratuit).
+Exemple : Création fiche → addCard, fetch grille → getCards().then(updateState).
+Sécurité : Pas de PII, encryption crypto-subtle pour notes sensibles (optionnel).
+★ 4. Performance et Optimisations (Critère Important pour UX Fluide)
+Build et Bundle : Vite (tree-shaking, minification), bundle <300KB. Code-splitting par page (lazy import const WeeklyView = lazy(() => import('./WeeklyView'))).
+Virtualisation : react-window pour grille (Mode Fiche), charge visible seulement (perf >1000 fiches).
+Debounce/Throttle : lodash.debounce pour saisie/recherche (300ms), évite recalculs inutiles.
+Memoization : React.memo pour Card.tsx, useMemo pour scores hybrides.
+Mesures : Lighthouse >90 (mobile/desktop), FCP <1s, TTI <2s. Tests perf Playwright (ex. : temps chargement grille 500 fiches).
+Comportement : Lazy loading images (si ajoutées), service worker cache assets.
+Intégration : Virtualisation dans CardGrid.tsx, memo dans algorithmes.
+Justification : Essentiel pour mobile low-end (ex. : iPhone SE), évite churn users.
+Exemple : Grille 100 fiches → Charge 20 visibles, scroll fluide.
+★ 5. Accessibilité (a11y – Critère Important pour Inclusion)
+Standards : WCAG AA (contraste 4.5:1, ARIA, focus).
+Implémentation :
+ARIA : role="button" pour icônes, aria-label ("Champ saisie"), aria-live pour toasts.
+Clavier : Raccourcis (Cmd+K recherche), focus visible (2px contour).
+Voix : Screen readers (ex. : "Fiche Deep Work, score 28"), checks via voix (navigator.speechRecognition optionnel).
+Modes : Contraste élevé (Paramètres), taille police ajustable.
+Tests : axe-core dans Vitest, Playwright pour E2E a11y.
+Intégration : Tous composants (ex. : Card.tsx avec aria-role="article").
+Justification : 15% users avec handicaps ; booste adoption inclusive.
+Exemple : Navigation clavier → Tab icônes, Enter toggle type.
+★ 6. PWA et Offline (Critère Important pour Mobilité)
+Manifest : /public/manifest.json (nom "KairuFlow", icônes 192x192/512x512, theme_color "#FFFFFF", display "standalone").
+Service Worker : Workbox (Vite PWA Plugin).
+import { registerSW } from 'virtual:pwa-register';
+
+registerSW({ immediate: true });
+Comportement : Cache-first assets (JS/CSS), network-first données (fallback local). Indicateur "Hors-ligne" si déconnecté.
+Intégration : CRUD Dexie.js offline, sync différé (futur backend).
+Justification : Utilisable partout (transports, faible réseau), installable comme app native.
+Exemple : Offline → Grille accessible, saisie fonctionne.
+Tests : Playwright offline mode.
+7. Sécurité et Confidentialité
+Données : Locales uniquement, pas de tracking. Encryption IndexedDB (crypto-subtle pour sensibles).
+Vulnérabilités : TypeScript évite injections, validation inputs (Zod).
+Justification : Respect RGPD, confiance users.
+8. Tests et Déploiement
+Tests : Vitest (unitaires : 90% couverture, ex. : score hybride), Playwright (E2E : onboarding → Playlist, a11y).
+Déploiement : Vercel (CI/CD GitHub), preview branches.
+Monitoring : Lighthouse pour perf, Sentry optionnel pour errors.
