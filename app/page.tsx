@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
+import dynamic from "next/dynamic"
 import { SmartInputBar } from "@/components/smart-input-bar"
 import { TaskGrid } from "@/components/task-grid"
 import { Sidebar, type FilterType } from "@/components/sidebar"
@@ -8,13 +9,25 @@ import { Archives } from "@/components/archives"
 import { DailyNote } from "@/components/daily-note"
 import { WeeklyView } from "@/components/weekly-view"
 import { BottomNav } from "@/components/bottom-nav"
-import { InsightsDashboard } from "@/components/insights-dashboard"
-import { OnboardingQuiz } from "@/components/onboarding-quiz"
-import { Settings } from "@/components/settings"
 import type { Task } from "@/types/task"
 import type { WeeklySuggestion } from "@/types/weekly"
 import type { EnergyProfile, AppSettings } from "@/types/onboarding"
 import { storage } from "@/lib/storage"
+
+const InsightsDashboard = dynamic(() => import("@/components/insights-dashboard").then((mod) => ({ default: mod.InsightsDashboard })), {
+  loading: () => <div className="flex items-center justify-center min-h-screen"><div className="animate-pulse text-muted-foreground">Chargement des insights...</div></div>,
+  ssr: false,
+})
+
+const OnboardingQuiz = dynamic(() => import("@/components/onboarding-quiz").then((mod) => ({ default: mod.OnboardingQuiz })), {
+  loading: () => <div className="flex items-center justify-center min-h-screen"><div className="animate-pulse text-muted-foreground">Chargement...</div></div>,
+  ssr: false,
+})
+
+const Settings = dynamic(() => import("@/components/settings").then((mod) => ({ default: mod.Settings })), {
+  loading: () => <div className="flex items-center justify-center min-h-screen"><div className="animate-pulse text-muted-foreground">Chargement des param\u00e8tres...</div></div>,
+  ssr: false,
+})
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
