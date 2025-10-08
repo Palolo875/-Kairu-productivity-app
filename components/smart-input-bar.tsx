@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { X, Sparkles, Mic, MicOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -10,6 +10,7 @@ import type { Task, Priority, Size, EnergyType, TaskType } from "@/types/task"
 import { energyEmojis } from "@/types/task"
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition"
 import { parseVoiceCommand, voiceCommandToTask } from "@/lib/voice-parser"
+import { parseWithNLP } from "@/services/NLPParser"
 
 interface SmartInputBarProps {
   onTaskCreate: (task: Omit<Task, "id" | "createdAt">) => void
@@ -37,6 +38,7 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [voiceCommandDetected, setVoiceCommandDetected] = useState<string | null>(null)
+  const latestInputRef = useRef<string>("")
 
   const {
     isListening,
@@ -112,91 +114,94 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
     }
   }, [])
 
-  const parseInput = (text: string) => {
-    const data: ParsedData = {
-      tags: [],
-      priority: "medium",
-      type: "task",
-      subtasks: [],
+  const parseInput = useCallback(async (text: string) => {
+    latestInputRef.current = text
+    const currentInput = text
+    
+    try {
+      const nlpResult = await parseWithNLP(text)
+      
+      if (latestInputRef.current !== currentInput) {
+        return
+      }
+      
+      const data: ParsedData = {
+        tags: nlpResult.tags,
+        priority: nlpResult.priority || "medium",
+        type: nlpResult.type,
+        subtasks: [],
+        size: nlpResult.size,
+        energy: nlpResult.energy,
+        dueDate: nlpResult.dueDate,
+      }
+
+      const subtaskMatches = text.match(/- \[ \] .+/g)
+      if (subtaskMatches) {
+        data.subtasks = subtaskMatches.map((match) => ({
+          id: crypto.randomUUID(),
+          text: match.replace(/- \[ \] /, "").trim(),
+          completed: false,
+        }))
+      }
+
+      if (text.includes("🧠")) data.energy = "deep"
+      else if (text.includes("🔧")) data.energy = "light"
+      else if (text.includes("✨")) data.energy = "creative"
+      else if (text.includes("💬")) data.energy = "admin"
+      else if (text.includes("📚")) data.energy = "learning"
+
+      if (text.includes("❓")) data.type = "question"
+      else if (text.includes("💡")) data.type = "idea"
+      else if (text.includes("🔗")) data.type = "link"
+
+      setParsedData(data)
+      setShowSuggestions(text.length > 3 && !data.energy && nlpResult.confidence < 0.8)
+    } catch (error) {
+      if (latestInputRef.current !== currentInput) {
+        return
+      }
+      console.error("NLP parsing error:", error)
+      const fallbackData: ParsedData = {
+        tags: [],
+        priority: "medium",
+        type: "task",
+        subtasks: [],
+      }
+      setParsedData(fallbackData)
     }
+  }, [])
 
-    const tagMatches = text.match(/#\w+/g)
-    if (tagMatches) {
-      data.tags = tagMatches.map((tag) => tag.slice(1))
+  useEffect(() => {
+    if (input.trim()) {
+      parseInput(input)
     }
+  }, [input, parseInput])
 
-    const priorityMatch = text.match(/!{1,3}/g)
-    if (priorityMatch) {
-      const exclamations = priorityMatch[0].length
-      data.priority = exclamations === 1 ? "low" : exclamations === 2 ? "high" : "urgent"
-    }
-
-    const sizeMatch = text.match(/@([SML])/i)
-    if (sizeMatch) {
-      data.size = sizeMatch[1].toUpperCase() as Size
-    }
-
-    if (text.includes("🧠")) data.energy = "deep"
-    else if (text.includes("🔧")) data.energy = "light"
-    else if (text.includes("✨")) data.energy = "creative"
-    else if (text.includes("💬")) data.energy = "admin"
-    else if (text.includes("📚")) data.energy = "learning"
-
-    if (text.includes("❓")) data.type = "question"
-    else if (text.includes("💡")) data.type = "idea"
-    else if (text.includes("🔗")) data.type = "link"
-    else data.type = "task"
-
-    const subtaskMatches = text.match(/- \[ \] .+/g)
-    if (subtaskMatches) {
-      data.subtasks = subtaskMatches.map((match) => ({
-        id: crypto.randomUUID(),
-        text: match.replace(/- \[ \] /, "").trim(),
-        completed: false,
-      }))
-    }
-
-    const today = new Date()
-    if (/aujourd'hui|today/i.test(text)) {
-      data.dueDate = today
-    } else if (/demain|tomorrow/i.test(text)) {
-      const tomorrow = new Date(today)
-      tomorrow.setDate(tomorrow.getDate() + 1)
-      data.dueDate = tomorrow
-    }
-
-    setParsedData(data)
-    setShowSuggestions(text.length > 3 && !data.energy)
-  }
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!input.trim()) return
 
-    const cleanTitle = input
-      .replace(/#\w+/g, "")
-      .replace(/!{1,3}/g, "")
-      .replace(/@[SML]/gi, "")
-      .replace(/🧠|🔧|✨|💬|📚|❓|💡|🔗/g, "")
-      .replace(/aujourd'hui|demain|today|tomorrow/gi, "")
-      .replace(/- \[ \] .+/g, "")
-      .trim()
+    try {
+      const nlpResult = await parseWithNLP(input)
+      
+      const task: Omit<Task, "id" | "createdAt"> = {
+        title: nlpResult.cleanText,
+        type: parsedData.type,
+        tags: parsedData.tags,
+        priority: parsedData.priority,
+        size: parsedData.size,
+        energy: parsedData.energy,
+        dueDate: parsedData.dueDate,
+        subtasks: parsedData.subtasks.length > 0 ? parsedData.subtasks : undefined,
+        completed: false,
+      }
 
-    const task: Omit<Task, "id" | "createdAt"> = {
-      title: cleanTitle,
-      type: parsedData.type,
-      tags: parsedData.tags,
-      priority: parsedData.priority,
-      size: parsedData.size,
-      energy: parsedData.energy,
-      dueDate: parsedData.dueDate,
-      subtasks: parsedData.subtasks.length > 0 ? parsedData.subtasks : undefined,
-      completed: false,
+      onTaskCreate(task)
+      setInput("")
+      setParsedData({ tags: [], priority: "medium", type: "task", subtasks: [] })
+      setShowSuggestions(false)
+    } catch (error) {
+      console.error("Error submitting task:", error)
     }
-
-    onTaskCreate(task)
-    setInput("")
-    setParsedData({ tags: [], priority: "medium", type: "task", subtasks: [] })
-    setShowSuggestions(false)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
