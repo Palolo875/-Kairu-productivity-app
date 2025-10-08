@@ -229,16 +229,13 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
   }
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
-      <div className="max-w-5xl mx-auto p-3 md:p-4">
-        <div
-          className={`neuro-soft rounded-2xl md:rounded-3xl bg-card transition-all duration-300 ${
-            isFocused ? "ring-2 ring-primary/20" : ""
-          } ${isListening ? "ring-2 ring-destructive/40 animate-pulse" : ""}`}
-        >
-          <div className="flex items-start gap-2 md:gap-3 p-3 md:p-4">
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary mt-2 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
+    <div className="w-full bg-transparent">
+      <div className="max-w-5xl mx-auto p-5">
+        {/* Conteneur de création - Design KairuFlow */}
+        <div className="bg-white rounded-[30px] shadow-[0_8px_30px_rgba(0,0,0,0.08)] p-5 transition-all duration-300">
+          <div className="flex items-center gap-3">
+            {/* Zone de texte */}
+            <div className="flex-1">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -246,12 +243,12 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
                 onKeyDown={handleKeyDown}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Notez une tâche... (ex. : Réunion Jean demain #ProjetX !! @S 🧠) ou dictez: 'Tâche urgente: appeler le client demain'"
-                className="w-full bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground text-sm md:text-base leading-relaxed min-h-[2.5rem] max-h-32"
+                placeholder="Notez une nouvelle tâche... ex: Réunion demain #ProjetX !urgent"
+                className="w-full bg-transparent border-none outline-none resize-none text-foreground placeholder:text-muted-foreground text-lg leading-relaxed min-h-[50px] max-h-32"
                 rows={1}
                 style={{
                   height: "auto",
-                  minHeight: "2.5rem",
+                  minHeight: "50px",
                 }}
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement
@@ -317,30 +314,44 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
               )}
             </div>
 
-            {isSupported && (
-              <Button
-                size="icon"
-                variant={isListening ? "destructive" : "ghost"}
-                onClick={handleVoiceToggle}
-                className={`flex-shrink-0 rounded-full h-8 w-8 md:h-10 md:w-10 transition-all ${
-                  isListening ? "animate-pulse" : "hover:bg-muted"
-                }`}
-                title={isListening ? "Arrêter l'enregistrement" : "Commencer l'enregistrement vocal"}
-              >
-                {isListening ? <MicOff className="w-3 h-3 md:w-4 md:h-4" /> : <Mic className="w-3 h-3 md:w-4 md:h-4" />}
-              </Button>
-            )}
+            {/* Contrôles - voix, clear, créer */}
+            <div className="flex items-center gap-2">
+              {isSupported && (
+                <Button
+                  size="icon"
+                  variant={isListening ? "destructive" : "ghost"}
+                  onClick={handleVoiceToggle}
+                  className={`flex-shrink-0 rounded-full h-10 w-10 transition-all ${
+                    isListening ? "animate-pulse" : "hover:bg-muted"
+                  }`}
+                  title={isListening ? "Arrêter l'enregistrement" : "Commencer l'enregistrement vocal"}
+                >
+                  {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </Button>
+              )}
 
-            {input && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => setInput("")}
-                className="flex-shrink-0 rounded-full hover:bg-muted h-8 w-8 md:h-10 md:w-10"
+              {input && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setInput("")}
+                  className="flex-shrink-0 rounded-full hover:bg-muted h-10 w-10"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim()}
+                className="w-[50px] h-[50px] rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition-transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                title="Créer la fiche"
               >
-                <X className="w-3 h-3 md:w-4 md:h-4" />
-              </Button>
-            )}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {showSuggestions && (
@@ -370,24 +381,10 @@ export function SmartInputBar({ onTaskCreate }: SmartInputBarProps) {
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-3 md:px-4 pb-3 md:pb-4 pt-2 border-t border-border/50">
-            <div className="text-xs text-muted-foreground hidden sm:block">
-              <kbd className="px-2 py-1 bg-muted rounded text-xs">Enter</kbd> pour créer •{" "}
-              <kbd className="px-2 py-1 bg-muted rounded text-xs">Esc</kbd> pour annuler
-              {isSupported && (
-                <>
-                  {" "}
-                  • <Mic className="inline w-3 h-3" /> pour dicter (ex: "Tâche urgente: ...")
-                </>
-              )}
-            </div>
-            <Button
-              onClick={handleSubmit}
-              disabled={!input.trim()}
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground neuro-hover w-full sm:w-auto text-sm md:text-base"
-            >
-              Créer la fiche
-            </Button>
+          {/* Instructions helpers - Design KairuFlow */}
+          <div className="mt-3 flex justify-between items-center text-xs text-muted-foreground">
+            <span>Appuyez sur Entrée pour créer</span>
+            <span>Utilisez # pour les projets, ! pour la priorité</span>
           </div>
         </div>
       </div>
