@@ -90,18 +90,23 @@ export function Playlist({ tasks, onTaskClick, onTaskComplete, energyProfile }: 
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Playlist du Jour</h2>
-        <span className="text-xs text-muted-foreground">
-          {completedToday.size}/{playlistTasks.length} complétées
-        </span>
-      </div>
+    <div className="space-y-4">
+      <h3 className="text-xl font-bold text-foreground">Playlist du Jour</h3>
 
       {playlistTasks.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
-          <p className="text-sm">Aucune tâche pour aujourd'hui</p>
-          <p className="text-xs mt-1">Ajoutez des tâches pour commencer</p>
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <div className="mb-6">
+            <svg viewBox="0 0 120 120" className="w-32 h-32">
+              <circle cx="60" cy="60" r="40" fill="#FFDBC3"/>
+              <circle cx="45" cy="50" r="4" fill="#190933"/>
+              <circle cx="75" cy="50" r="4" fill="#190933"/>
+              <path d="M 45 68 Q 60 75, 75 68" stroke="#190933" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <path d="M 30 40 Q 25 35, 30 30" stroke="#190933" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              <circle cx="28" cy="35" r="8" fill="#EE9E8E"/>
+            </svg>
+          </div>
+          <p className="text-lg font-bold text-foreground mb-2">Prêt à créer une super journée ?</p>
+          <p className="text-sm text-muted-foreground">Ajoutez votre première tâche pour commencer.</p>
         </div>
       ) : (
         <div className="space-y-2">

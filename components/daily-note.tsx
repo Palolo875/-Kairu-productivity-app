@@ -55,62 +55,76 @@ export function DailyNote({ tasks, onTaskClick, onTaskComplete, onCreateTask }: 
     energyChecks.length > 0
       ? (energyChecks.reduce((sum, check) => sum + check.level, 0) / energyChecks.length).toFixed(1)
       : "N/A"
+  
+  const completionPercentage = todayTasks.length > 0 ? Math.round((completedTasks / todayTasks.length) * 100) : 0
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="neuro-soft rounded-3xl p-6 mb-6 bg-gradient-to-br from-primary/5 to-secondary/5">
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" size="icon" onClick={() => navigateDay("prev")} className="rounded-full">
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-1">
-              {currentDate.toLocaleDateString("fr-FR", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </h1>
-            {isToday && <p className="text-sm text-muted-foreground">Bonjour Alex 👋</p>}
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigateDay("next")}
-            className="rounded-full"
-            disabled={isToday}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
+    <div className="max-w-4xl mx-auto p-5">
+      {/* Header - Nouveau design KairuFlow */}
+      <div className="flex justify-between items-center mb-8 px-1">
+        {/* Date et message de bienvenue */}
+        <div className="flex-1">
+          <p className="text-sm text-muted-foreground mb-1">
+            {currentDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+          </p>
+          <h2 className="text-3xl font-bold text-foreground flex items-center gap-2">
+            {isToday ? "Bonjour" : currentDate.toLocaleDateString("fr-FR", { weekday: "long" })} 👋
+          </h2>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center p-3 rounded-2xl bg-card/50">
-            <p className="text-2xl font-bold text-primary">
-              {completedTasks}/{todayTasks.length}
-            </p>
-            <p className="text-xs text-muted-foreground">Tâches</p>
-          </div>
-          <div className="text-center p-3 rounded-2xl bg-card/50">
-            <p className="text-2xl font-bold text-destructive">{urgentTasks}</p>
-            <p className="text-xs text-muted-foreground">Urgentes</p>
-          </div>
-          <div className="text-center p-3 rounded-2xl bg-card/50">
-            <p className="text-2xl font-bold text-primary">{avgEnergy}</p>
-            <p className="text-xs text-muted-foreground">Énergie</p>
+        {/* Jauge circulaire de complétion */}
+        <div className="relative w-20 h-20 flex-shrink-0">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+            {/* Cercle de fond */}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="8"
+              className="text-border"
+            />
+            {/* Cercle de progression */}
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="8"
+              strokeDasharray={`${completionPercentage * 2.51} 251`}
+              className="text-primary transition-all duration-500"
+              strokeLinecap="round"
+            />
+          </svg>
+          {/* Texte au centre */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-lg font-bold text-foreground">{completedTasks}/{todayTasks.length}</span>
+            <span className="text-xs text-muted-foreground">Tâches</span>
           </div>
         </div>
       </div>
+      
+      {/* Navigation de jour (seulement si pas aujourd'hui) */}
+      {!isToday && (
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigateDay("prev")} className="rounded-full">
+            <ChevronLeft className="w-5 h-5" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setCurrentDate(new Date())} className="rounded-full px-6">
+            Retour à aujourd'hui
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => navigateDay("next")} className="rounded-full">
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
+      )}
 
       {/* Sections */}
       <div className="space-y-6">
         {/* Playlist */}
-        <div className="neuro-soft rounded-3xl p-6">
+        <div className="bg-white/70 backdrop-blur-sm rounded-[25px] p-6 shadow-lg">
           <Playlist
             tasks={tasks}
             onTaskClick={onTaskClick}
@@ -120,12 +134,12 @@ export function DailyNote({ tasks, onTaskClick, onTaskComplete, onCreateTask }: 
         </div>
 
         {/* Intention */}
-        <div className="neuro-soft rounded-3xl p-6">
+        <div className="bg-white/70 backdrop-blur-sm rounded-[25px] p-6 shadow-lg">
           <Intention value={intention} onChange={setIntention} tasks={tasks} />
         </div>
 
         {/* Notebook */}
-        <div className="neuro-soft rounded-3xl p-6">
+        <div className="bg-white/70 backdrop-blur-sm rounded-[25px] p-6 shadow-lg">
           <Notebook value={notebook} onChange={setNotebook} onCreateTask={onCreateTask} />
         </div>
       </div>
